@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>AutoLoRA</title>
+
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- <base href="/"> -->
+
+        <!--FACEBOOK-->
+    <meta property="og:image" content="https://jonbarron.info/mipnerf/img/Child_tuning.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="682">
+    <meta property="og:image:height" content="682">
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://jonbarron.info/mipnerf/"/>
+    <meta property="og:title" content="Attention-Guided-Weights-Mixup" />
+    <meta property="og:description" content="Project page for Attention-Guided-Weights-Mixup: Generalizable and Stable Finetuning of Pretrained Language Models on Low-Resource Texts." />
+
+        <!--TWITTER-->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Attention-Guided-Weights-Mixup" />
+    <meta name="twitter:description" content="Project page for Attention-Guided-Weights-Mixup: Generalizable and Stable Finetuning of Pretrained Language Models on Low-Resource Texts." />
+    <meta name="twitter:image" content="https://jonbarron.info/mipnerf/img/Child_tuning.png" />
+
+
+<!--     <link rel="apple-touch-icon" href="apple-touch-icon.png"> -->
+  <!-- <link rel="icon" type="image/png" href="img/seal_icon.png"> -->
+    <!-- Place favicon.ico in the root directory -->
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.css">
+    <link rel="stylesheet" href="css/app.css">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.3/clipboard.min.js"></script>
+    
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="container" id="main">
+        <div class="row">
+            <h2 class="col-md-12 text-center">
+                AutoLoRA:  <br> Automatically Tuning Matrix Ranks in Low-Rank Adaptation Based on Meta Learning </br> 
+                <small>
+                    Annual Conference of the North American Chapter of <br> the Association for Computational Linguistics (NAACL), 2024</br> 
+                </small>
+            </h2>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <ul class="list-inline">
+                    <li>
+                        <a href="https://scholar.google.com/citations?user=D7EXgU0AAAAJ">
+                          Ruiyi Zhang
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://tongclass.ac.cn/author/rushi-qiang/">
+                            Rushi Qiang
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://sai-ashish.github.io/website/">
+                            Sai Ashish Somayajula
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://pengtaoxie.github.io">
+                          Pengtao Xie
+                        </a>
+                    </li>
+                </br>University of California, San Diego
+                </ul>
+            </div>
+        </div>
+
+
+        <div class="row">
+                <div class="col-md-4 col-md-offset-4 text-center">
+                    <ul class="nav nav-pills nav-justified">
+                        <li>
+                            <a href="https://arxiv.org/abs/2403.09113">
+                            <image src="img/mip_paper_image.jpg" height="60px">
+                                <h4><strong>Paper</strong></h4>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/ruz048/AutoLoRA">
+                            <image src="img/github.png" height="60px">
+                                <h4><strong>Code</strong></h4>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+        </div>
+
+
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Abstract
+                </h3>
+                <p class="text-justify">
+                    Large-scale pretraining followed by task-specific finetuning has achieved great success in various NLP tasks. 
+                    Since finetuning all parameters of large pretrained models poses substantial computational and memory challenges, several efficient finetuning methods have been developed. 
+                    Among them, low-rank adaptation (LoRA), which finetunes low-rank incremental update matrices on top of frozen pretrained weights, has proven particularly effective. 
+                    Nonetheless, LoRA's uniform rank assignment across all layers, along with its reliance on an exhaustive search to find the best rank, leads to high computation costs and suboptimal finetuning performance. 
+                    To address these limitations, we introduce AutoLoRA, a meta learning based framework for automatically identifying the optimal rank of each LoRA layer. 
+                    AutoLoRA associates each rank-1 matrix in a low-rank update matrix with a selection variable, which determines whether the rank-1 matrix should be discarded. A meta learning based method is developed to learn these selection variables. 
+                    The optimal rank is determined by thresholding the values of these variables. Our comprehensive experiments on natural language understanding, generation, and sequence labeling demonstrate the effectiveness of AutoLoRA.
+                </p>
+                <image src="img/Autolora.png" class="img-responsive" alt="overview"><br>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Introduction
+                </h3>
+                <p class="text-justify">
+                    Large Language Models (LLMs) have demonstrated state-of-the-art performance across a variety of NLP tasks, 
+                    spanning from Natural Language Understanding (NLU) to Natural Language Generation (NLG),
+                     a trajectory highlighted by the success of models like ChatGPT.
+                </p>
+                <p class="text-justify">
+                    However, as models scale up, finetuning becomes highly expensive in computation. 
+                </p>
+                <p class="text-justify">
+                    To address this challenge, many efficient finetuning methods have been developed. 
+                    For instance, To address these limitations, LoRA proposes to add low-rank incremental update matrices to pretrained weight matrices. 
+                    During finetuning, only the incremental matrices are trained while the pretrained ones are frozen. 
+                    The low-rank parameterization significantly reduces the number of finetuning parameters. 
+                </p>
+                <p class="text-justify">
+                    The low-rank parameterization of LoRA significantly reduces the number of finetuning parameters. 
+                    However, the update matrices at different  layers share the same rank, without considering the varying properties across layers. 
+                    Obtaining the optimal rank in LoRA typically involves an extensive manual hyperparameter search, which is time-consuming and poses scalability issues. 
+                </p>
+            </div>
+        </div>
+            
+
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    AutoLoRA
+                </h3>
+                <p class="text-justify">
+                    In AutoLoRA, we aim to automatically determine the optimal rank for each LoRA layer, instead of manually specifying it as in LoRA. 
+                    To achieve this goal, we associate each rank-1 matrix in an update matrix with a selection variable and reparameterize the update matrix as a weighted sum of rank-1 matrices. 
+                    A meta learning based approach is developed to learn these selection variables. 
+                    After learning, if the value of a selection variable is close to zero, its corresponding rank-1 matrix is removed. 
+                    In this way, we can determine the optimal rank for each update matrix based on the selection variables.
+                </p>
+                <p style="text-align:center;">
+                    <image src="img/algorithm.jpg" class="img-responsive" alt="alg"  width="90%">
+                </p>                
+            </div>
+        </div>
+            
+
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Results
+                </h3>
+                <p class="text-justify">
+                    AutoLoRA achieves the  best performance on 6 out of 8 datasets, and obtains an average performance of 85.5, outperforming all baseline methods. 
+                    As AutoLoRA outperforms LoRA  on average, we can conclude that the optimal ranks learned by AutoLoRA are better than the manually tuned ranks in LoRA.
+                </p>
+                <p style="text-align:center;">
+                    <image src="img/results.jpg" class="img-responsive" alt="scales" width="90%">
+                </p> 
+                <p class="text-justify">
+                    The reasons are two-fold. First, AutoLoRA allows different layers to have distinct ranks, sufficiently accounting for the fact that different layers have varying properties and need to have layer-specific amounts of tunable parameters. In contrast, LoRA uniformly uses the same rank for all layers, without considering the difference across layers. Second, AutoLoRA  learns the continuous selection variables (which determine the ranks) by maximizing the finetuning performance on validation data via gradient descent. The search space is continuous, which allows more comprehensive exploration of  rank configurations. 
+                </p>
+
+                <p style="text-align:center;">
+                    <image src="img/rank.png" class="img-responsive" alt="scales" width="90%">
+                </p> 
+                <p class="text-justify">
+                    As can be seen, the optimal ranks learned by AutoLoRA for different layers have varying values. This is aligned with the hypothesis discussed that different layers need different matrix ranks.
+                </p>
+                
+            </div>
+        </div>
+            
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Citation
+                </h3>
+                <div class="form-group col-md-10 col-md-offset-1">
+                    <textarea id="bibtex" class="form-control" readonly>
+@article{zhang2024autolora,
+    title={AutoLoRA:  Automatically Tuning Matrix Ranks in Low-Rank Adaptation Based on Meta Learning},
+    author={Zhang, Ruiyi and Qiang, Rushi and Somayajula, Sai Ashish and Xie, Pengtao},
+    journal={Annual Conference of the North American Chapter of the Association for Computational Linguistics (NAACL)},
+    year={2024}
+}</textarea>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
