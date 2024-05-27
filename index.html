@@ -10,7 +10,10 @@
 
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
     <!-- <base href="/"> -->
 
         <!--FACEBOOK-->
@@ -168,6 +171,56 @@
                     After learning, if the value of a selection variable is close to zero, its corresponding rank-1 matrix is removed. 
                     In this way, we can determine the optimal rank for each update matrix based on the selection variables.
                 </p>
+                <h4>
+                    Reparameterize  Update Matrices
+                </h4>
+                <p class="text-justify">
+                    In LoRA, the LoRA update matrix \(\Delta_l\) at layer \( l\)  can be written as the summation of \(k_l\) rank-1 matrices:
+                    
+                    $$\Delta_l=\sum_{j=1}^{k_l}\Delta_l^j $$    
+
+                    where \(\Delta_l^j\) is the outer-product between the \(j\)-th column of \(U_l\) and the \(j\)-th row of \(V_l\).
+
+                </p>
+                <p class="text-justify">
+                    In AutoLoRA, we associate each rank-1 matrix \(\Delta_l^j\) in the equation above with a selection variable \(\alpha^j_l\in[0,1]\) and reparameterize \(\Delta_l\) as  a  weighted sum of rank-1 matrices: 
+                    $$
+                    \Delta_l=\sum_{j=1}^{k_l}\alpha_l^j\Delta_l^j
+                    $$
+                    \(\alpha^j_l\) can be interpreted as the importance of \(\Delta_l^j\).  
+                </p>
+                <h4>
+                    Learn Selection Variables
+                </h4>
+                <p class="text-justify">
+                    Let \(A = \{\alpha^j_l|1 \leq j \leq k_l, 1 \leq l \leq M\}\) denote all selection variables, where \(M\) is the number of layers in the pretrained model. 
+                    And given weight parameters \(W_l=\widetilde{W}_l+\Delta_l\) at layer \(l\)
+                    We propose a meta learning based approach to learn \(A\). 
+                </p>
+                <p class="text-justify">
+                    We first perform a one-step gradient descent update of \(W_l\):
+                    $$
+                    \widehat{W}_l= W_l-\eta \nabla_{W_l}\mathcal{L}_{tr}(\{W_l\}_{l=1}^M,D_{tr}) 
+                    $$
+                    where \(\eta\) is a learning rate.
+                </p>
+                <p class="text-justify">
+                    Then we evaluate \(\{\widehat{W}_l\}_{l=1}^M\) on a validation dataset \(D_{val}\). 
+                    The validation loss \(\mathcal{L}_{val}(\{\widehat{W}_l\}_{l=1}^M,D_{val})\) is a function of \(A\) since \(\mathcal{L}_{val}\) depends on \(\{\widehat{W}_l\}_{l=1}^M\) which depends on \(A\). 
+                    We optimize \(A\) by minimizing the validation loss:
+                    $$
+                    \textrm{min}_A\; \mathcal{L}_{val}(\{\widehat{W}_l\}_{l=1}^M,D_{val})
+                    $$
+                    We use an approximate gradient-based algorithm to solve this problem. 
+                    The updates  of \(W\) and \(A\)  are iteratively performed until convergence. 
+                </p>
+                <h4>Determine Matrix Rank</h4>
+                Given the optimally learned  selection variables \(A^*\), we determine the rank of each update matrix based on \(A^*\). 
+                For each layer \(l\), we count the number of entries in  \(\{\alpha_l^j\}_{j=1}^{k_l}\) that satisfy \(\alpha_l^j\geq\lambda\), where \(\lambda\) denotes a threshold. 
+                This number would be the optimal rank  for \(\Delta_l\). We set \(\lambda\) to be \(\lambda=1/k_l\).
+                <h4>Algorithm</h4>
+                <p class="text-justify">
+                </p>
                 <p style="text-align:center;">
                     <image src="img/algorithm.jpg" class="img-responsive" alt="alg"  width="90%">
                 </p>                
@@ -182,6 +235,10 @@
                     Results
                 </h3>
                 <p class="text-justify">
+                    We conduct extensive experiments on eight datasets from the General Language Understanding Evaluation (GLUE) benchmark to evaluate the performance of AutoLoRA on NLU tasks.
+                </p>
+                
+                <p class="text-justify">
                     AutoLoRA achieves the  best performance on 6 out of 8 datasets, and obtains an average performance of 85.5, outperforming all baseline methods. 
                     As AutoLoRA outperforms LoRA  on average, we can conclude that the optimal ranks learned by AutoLoRA are better than the manually tuned ranks in LoRA.
                 </p>
@@ -192,6 +249,18 @@
                     The reasons are two-fold. First, AutoLoRA allows different layers to have distinct ranks, sufficiently accounting for the fact that different layers have varying properties and need to have layer-specific amounts of tunable parameters. In contrast, LoRA uniformly uses the same rank for all layers, without considering the difference across layers. Second, AutoLoRA  learns the continuous selection variables (which determine the ranks) by maximizing the finetuning performance on validation data via gradient descent. The search space is continuous, which allows more comprehensive exploration of  rank configurations. 
                 </p>
 
+            </div>
+        </div>
+            
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Visualization
+                </h3>
+                <p class="text-justify">
+                    We presents the optimal rank determined by AutoLoRA for the QQP, MNLI, and E2E datasets.
+                </p>
+               
                 <p style="text-align:center;">
                     <image src="img/rank.png" class="img-responsive" alt="scales" width="90%">
                 </p> 
@@ -201,7 +270,7 @@
                 
             </div>
         </div>
-            
+
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <h3>
